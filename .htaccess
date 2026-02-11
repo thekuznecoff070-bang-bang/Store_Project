@@ -1,0 +1,10 @@
+# Store Project - Apache RewriteRules (if needed instead of Nginx)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /store-project/
+    # Don't rewrite existing files or directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Rewrite everything to index.php
+    RewriteRule ^(.*)$ index.php?$1 [L,QSA]
+</IfModule>
