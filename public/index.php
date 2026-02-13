@@ -9,14 +9,14 @@
       content="Демо магазина: каталог, корзина, оформление заказа. Vanilla HTML/CSS/JS."
     />
 
-    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#catalog">Перейти к каталогу</a>
 
     <header class="topbar" role="banner">
       <nav class="nav" aria-label="Основная навигация">
-        <a class="brand" href="./index.php" aria-label="Store Project — главная">
+        <a class="brand" href="index.php" aria-label="Store Project — главная">
           <span class="brand__dot" aria-hidden="true"></span>
           <span class="brand__text">Store</span>
         </a>
@@ -319,6 +319,6 @@
       </div>
     </div>
 
-    <script src="./js/app.js" defer></script>
+    <script src="app.js" defer></script>
   </body>
 </html>
