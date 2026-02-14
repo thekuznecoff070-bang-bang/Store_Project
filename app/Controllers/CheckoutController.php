@@ -25,41 +25,66 @@ class CheckoutController
             header('Location: /cart');
             exit;
         }
-
+        // 1. Подключаемся к БД
         $pdo = Database::connect();
 
-        // 1. Создаём заказ
-        $stmt = $pdo->prepare(
-            'INSERT INTO orders (customer_name, customer_phone, total_price)
+        try {
+            // Считаем общую стоимость заказа
+            $totalPrice = 0;
+            foreach ($cart as $item) {
+                $totalPrice += $item['price'] * $item['qty'];
+            }
+
+            // 1️⃣ НАЧАЛИ ТРАНЗАКЦИЮ
+            $pdo->beginTransaction();
+
+            // 2️⃣ СОХРАНЯЕМ ЗАКАЗ (orders)
+            $stmt = $pdo->prepare(
+                'INSERT INTO orders (customer_name, customer_phone, total_price)
          VALUES (:name, :phone, :total)'
-        );
-        $stmt->execute([
-            'name' => $name,
-            'phone' => $phone,
-            'total' => 0.00,
-        ]);
-
-        $orderId = (int)$pdo->lastInsertId();
-        $_SESSION['order_id'] = $orderId;
-
-        // 2. Сохраняем товары заказа
-        $stmtItem = $pdo->prepare(
-            'INSERT INTO order_items (order_id, product_id, price, quantity)
-         VALUES (:order_id, :product_id, :price, :quantity)'
-        );
-
-        foreach ($cart as $item) {
-            $stmtItem->execute([
-                'order_id' => $orderId,
-                'product_id' => $item['id'],
-                'price' => $item['price'],
-                'quantity' => $item['qty'],
+            );
+            $stmt->execute([
+                'name' => $name,
+                'phone' => $phone,
+                'total' => $totalPrice,
             ]);
+
+            $orderId = (int)$pdo->lastInsertId();
+
+            // 3️⃣ СОХРАНЯЕМ ТОВАРЫ (order_items)
+            $stmtItem = $pdo->prepare(
+                'INSERT INTO order_items (order_id, product_id, price, quantity)
+         VALUES (:order_id, :product_id, :price, :quantity)'
+            );
+
+            foreach ($cart as $item) {
+                $stmtItem->execute([
+                    'order_id' => $orderId,
+                    'product_id' => $item['id'],
+                    'price' => $item['price'],
+                    'quantity' => $item['qty'],
+                ]);
+            }
+
+            // 4️⃣ ВСЁ ОК — ФИКСИРУЕМ
+            $pdo->commit();
+
+            // 5️⃣ ТОЛЬКО ТЕПЕРЬ чистим корзину
+            unset($_SESSION['cart']);
+
+            header('Location: /order/success?id=' . $orderId);
+            exit;
+
+        } catch (Throwable $e) {
+
+            // 6️⃣ ЕСЛИ ОШИБКА — ОТКАТ
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            echo 'Ошибка оформления заказа';
+            exit;
         }
 
-        // 3. Редирект
-        header('Location: /order/success');
-        exit;
     }
-
 }
