@@ -46,7 +46,10 @@ class Router
                 } else {
                     $controller->form();
                 }
+                break;
 
+            case 'order/success':
+                require_once __DIR__ . '/../Views/checkout/success.php';
                 break;
 
             default:
