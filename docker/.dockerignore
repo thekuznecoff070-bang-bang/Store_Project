@@ -1,0 +1,24 @@
+# Файлы и папки которые не копируются в Docker контейнер
+
+.git
+.gitignore
+.dockerignore
+.DS_Store
+.idea
+.vscode
+node_modules
+npm-debug.log
+yarn-error.log
+*.swp
+*.swo
+*~
+.env.local
+.env.*.local
+storage/logs
+cache/
+tests/
+README.md
+LICENSE
+docker-compose.yml
+.htaccess
+
