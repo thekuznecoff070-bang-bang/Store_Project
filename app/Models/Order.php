@@ -5,7 +5,8 @@ class Order  //<--создаётся класс ордера, который б�
 {
     public static function create(array $data): int //<--создаётся статический метод create, который принимает массив данных и возвращает ID созданного заказа
     {
-        $db = Database::getConnection(); //<--получаем соединение с базой данных через класс Database
+        require_once __DIR__ . '/../Core/Database.php';
+        $db = Database::connect(); //<--получаем соединение с базой данных через класс Database
 
         $sql = "
             INSERT INTO orders (user_name, user_phone, total_price, created_at)
@@ -19,5 +20,17 @@ class Order  //<--создаётся класс ордера, который б�
         ]);
 
         return (int)$db->lastInsertId(); //<--возвращаем ID последнего вставленного заказа, приводя его к целому числу
+    }
+
+    public static function findById(int $id): ?array
+    {
+        require_once __DIR__ . '/../Core/Database.php';
+        $db = Database::connect();
+
+        $stmt = $db->prepare('SELECT * FROM orders WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $order ?: null; // Возвращаем данные заказа или null, если заказ не найден
     }
 }

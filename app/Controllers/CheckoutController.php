@@ -5,11 +5,21 @@ class CheckoutController
 {
     public function form(): void
     {
+        $_SESSION['checkout_token'] = bin2hex(random_bytes(16));
         require_once __DIR__ . '/../Views/checkout/form.php';
     }
 
     public function submit(): void
     {
+        $token = $_POST['checkout_token'] ?? '';
+        if (
+            empty($_SESSION['checkout_token']) ||
+            $token !== $_SESSION['checkout_token']
+        ) {
+            echo 'Заказ уже был отправлен или форма устарела';
+            exit;
+        }
+
         require_once __DIR__ . '/../Core/Database.php';
 
         $name = $_POST['customer_name'] ?? '';
@@ -35,10 +45,10 @@ class CheckoutController
                 $totalPrice += $item['price'] * $item['qty'];
             }
 
-            // 1️⃣ НАЧАЛИ ТРАНЗАКЦИЮ
+            //  НАЧАЛИ ТРАНЗАКЦИЮ
             $pdo->beginTransaction();
 
-            // 2️⃣ СОХРАНЯЕМ ЗАКАЗ (orders)
+            //  СОХРАНЯЕМ ЗАКАЗ (orders)
             $stmt = $pdo->prepare(
                 'INSERT INTO orders (customer_name, customer_phone, total_price)
          VALUES (:name, :phone, :total)'
@@ -51,7 +61,7 @@ class CheckoutController
 
             $orderId = (int)$pdo->lastInsertId();
 
-            // 3️⃣ СОХРАНЯЕМ ТОВАРЫ (order_items)
+            //  СОХРАНЯЕМ ТОВАРЫ (order_items)
             $stmtItem = $pdo->prepare(
                 'INSERT INTO order_items (order_id, product_id, price, quantity)
          VALUES (:order_id, :product_id, :price, :quantity)'
@@ -66,18 +76,19 @@ class CheckoutController
                 ]);
             }
 
-            // 4️⃣ ВСЁ ОК — ФИКСИРУЕМ
+            //  ВСЁ ОК — ФИКСИРУЕМ
             $pdo->commit();
-
-            // 5️⃣ ТОЛЬКО ТЕПЕРЬ чистим корзину
+            unset($_SESSION['checkout_token']);
             unset($_SESSION['cart']);
 
-            header('Location: /order/success?id=' . $orderId);
+            $_SESSION['success_order_id'] = $orderId;
+
+            header('Location: /order/success?id=' . urldecode((string)$orderId));
             exit;
 
         } catch (Throwable $e) {
 
-            // 6️⃣ ЕСЛИ ОШИБКА — ОТКАТ
+            //  ЕСЛИ ОШИБКА — ОТКАТ
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }

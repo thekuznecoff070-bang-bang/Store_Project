@@ -49,7 +49,8 @@ class Router
                 break;
 
             case 'order/success':
-                require_once __DIR__ . '/../Views/checkout/success.php';
+                require_once __DIR__ . '/../Controllers/OrderController.php';
+                (new OrderController())->success();
                 break;
 
             default:
