@@ -25,7 +25,7 @@ class OrderController
             return;
         }
 
-        unset($_SESSION['success_order_id']);
+        unset($_SESSION['success_order_id']); // Удаляем ID заказа из сессии, чтобы предотвратить повторный доступ
 
         $order = Order::findById($orderId);
         if (!$order) {

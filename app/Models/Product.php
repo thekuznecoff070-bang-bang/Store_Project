@@ -9,7 +9,8 @@ class Product
     {
         $pdo = Database::connect();
 
-        $stmt = $pdo->query('SELECT id, name, price FROM products');
+        // Добавили description в SELECT
+        $stmt = $pdo->query('SELECT id, name, description, price FROM products');
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -17,7 +18,8 @@ class Product
     {
         $pdo = Database::connect();
 
-        $stmt = $pdo->prepare('SELECT id, name, price FROM products WHERE id = :id');
+        // Добавили description в SELECT
+        $stmt = $pdo->prepare('SELECT id, name, description, price FROM products WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
