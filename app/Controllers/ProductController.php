@@ -7,11 +7,21 @@ class ProductController
 {
     public function index(): void
     {
-        $title = 'Товары';
-        $products = Product::all();
-        $content = __DIR__ . '/../Views/products.php';
+        // Получаем параметры из URL (?search=...&sort=...)
+        $search = trim($_GET['search'] ?? '');
+        $sort = $_GET['sort'] ?? 'default';
 
+        // Разрешённые варианты сортировки (защита от подмены)
+        $allowedSorts = ['default', 'price-asc', 'price-desc', 'name-asc'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'default';
+        }
+
+        // Ищем товары через модель
+        $products = Product::search($search, $sort);
+
+        $title = 'Каталог товаров';
+        $content = __DIR__ . '/../Views/products.php';
         require __DIR__ . '/../Views/layout.php';
     }
 }
-

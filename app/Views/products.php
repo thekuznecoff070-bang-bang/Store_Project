@@ -1,61 +1,112 @@
-<section style="max-width:var(--max); margin:0 auto; padding:60px 18px;">
+<section class="section" id="catalog" aria-label="Каталог товаров">
 
-    <h1 style="margin-bottom:8px;">Каталог товаров</h1>
-    <p style="color:var(--muted); margin-bottom:32px;">
-        Всего: <?= count($products) ?>
-        <?php
-        $count = count($products);
-        $lastDigit = $count % 10;
-        $lastTwoDigits = $count % 100;
+    <!-- Заголовок + поиск + сортировка -->
+    <div class="section__header">
+        <h2 class="section__title">Каталог</h2>
 
-        if ($lastTwoDigits >= 11 && $lastTwoDigits <= 19) {
-            echo 'товаров';
-        } elseif ($lastDigit === 1) {
-            echo 'товар';
-        } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
-            echo 'товара';
-        } else {
-            echo 'товаров';
-        }
-        ?>
-    </p>
+        <div class="section__tools">
+            <form method="GET" action="/products" style="display:flex; gap:10px; flex-wrap:wrap;">
 
+                <!-- Поле поиска -->
+                <label class="field field--compact" for="search">
+                    <span class="field__label">Поиск</span>
+                    <input
+                            id="search"
+                            class="input"
+                            type="search"
+                            name="search"
+                            placeholder="Например: Air, Pro, Dock…"
+                            value="<?= htmlspecialchars($search ?? '') ?>"
+                            autocomplete="off"
+                    />
+                </label>
+
+                <!-- Сортировка -->
+                <label class="field field--compact" for="sort">
+                    <span class="field__label">Сортировка</span>
+                    <select id="sort" class="select" name="sort" onchange="this.form.submit()">
+                        <option value="default"    <?= ($sort ?? '') === 'default'    ? 'selected' : '' ?>>По умолчанию</option>
+                        <option value="price-asc"  <?= ($sort ?? '') === 'price-asc'  ? 'selected' : '' ?>>Цена: по возрастанию</option>
+                        <option value="price-desc" <?= ($sort ?? '') === 'price-desc' ? 'selected' : '' ?>>Цена: по убыванию</option>
+                        <option value="name-asc"   <?= ($sort ?? '') === 'name-asc'   ? 'selected' : '' ?>>Название: А → Я</option>
+                    </select>
+                </label>
+
+                <!-- Кнопка поиска -->
+                <div style="display:flex; align-items:flex-end;">
+                    <button type="submit" class="btn btn--primary btn--mini">Найти</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Результат поиска -->
+    <?php if (!empty($search)): ?>
+        <p style="margin:16px 0 0; color:var(--muted); font-size:14px;">
+            Результаты по запросу «<?= htmlspecialchars($search) ?>» —
+            <?= count($products) ?>
+            <?php
+            $count = count($products);
+            $lastDigit = $count % 10;
+            $lastTwoDigits = $count % 100;
+            if ($lastTwoDigits >= 11 && $lastTwoDigits <= 19) {
+                echo 'товаров';
+            } elseif ($lastDigit === 1) {
+                echo 'товар';
+            } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
+                echo 'товара';
+            } else {
+                echo 'товаров';
+            }
+            ?>
+            <a href="/products" style="color:var(--accent); margin-left:8px;">Сбросить</a>
+        </p>
+    <?php endif; ?>
+
+    <!-- Товары -->
     <?php if (empty($products)): ?>
 
-        <div class="glass-card" style="padding:40px; text-align:center;">
-            <p style="font-size:48px; margin-bottom:16px;">📦</p>
-            <h2>Товаров пока нет</h2>
-            <p style="color:var(--muted);">Загляните позже</p>
-            <a href="/" class="btn btn--primary" style="margin-top:20px;">На главную</a>
+        <div class="empty" style="margin-top:20px;">
+            <p class="empty__title">Ничего не найдено</p>
+            <p class="empty__text">Попробуйте другой запрос или очистите поиск.</p>
+            <a href="/products" class="btn btn--ghost">Сбросить поиск</a>
         </div>
 
     <?php else: ?>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:24px;">
+        <div class="product-grid" style="margin-top:20px;">
 
             <?php foreach ($products as $product): ?>
-                <article class="glass-card" style="padding:24px; display:flex; flex-direction:column;">
+                <article class="product">
 
-                    <h3 class="glass-card__title" style="margin-bottom:8px;">
+                    <div class="product__top">
+                        <span class="pill">
+                            <?= number_format((float)$product['price'], 0, '.', ' ') ?> ₽
+                        </span>
+                    </div>
+
+                    <h3 class="product__name">
                         <?= htmlspecialchars($product['name']) ?>
                     </h3>
 
-                    <!-- Описание товара (если есть) -->
                     <?php if (!empty($product['description'])): ?>
-                        <p style="color:var(--muted); font-size:14px; margin:0 0 16px 0; flex-grow:1;">
+                        <p class="product__desc">
                             <?= htmlspecialchars($product['description']) ?>
                         </p>
                     <?php endif; ?>
 
-                    <p style="font-size:24px; font-weight:700; margin:0 0 16px 0;">
-                        <?= number_format((float)$product['price'], 0, '.', ' ') ?> ₽
-                    </p>
-
-                    <a href="/cart/add?id=<?= (int)$product['id'] ?>"
-                       class="btn btn--primary"
-                       style="display:block; text-align:center;">
-                        🛒 В корзину
-                    </a>
+                    <div class="product__bottom">
+                        <div class="price">
+                            <?= number_format((float)$product['price'], 0, '.', ' ') ?> ₽
+                        </div>
+                        <div class="product__actions">
+                            <a href="/cart/add?id=<?= (int)$product['id'] ?>"
+                               class="btn btn--primary btn--mini">
+                                В корзину
+                            </a>
+                        </div>
+                    </div>
 
                 </article>
             <?php endforeach; ?>
