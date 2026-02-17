@@ -31,7 +31,7 @@ class Product
      * Поиск + сортировка товаров
      *
      * @param string $search — поисковый запрос (ищем в name и description)
-     * @param string $sort   — способ сортировки
+     * @param string $sort — способ сортировки
      * @return array
      */
     public static function search(string $search = '', string $sort = 'default'): array

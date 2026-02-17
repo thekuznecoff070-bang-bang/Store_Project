@@ -29,7 +29,8 @@
                 $total += $itemTotal;
                 ?>
 
-                <div class="glass-card" style="padding:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div class="glass-card"
+                     style="padding:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
 
                     <!-- Левая часть: название и цена за штуку -->
                     <div>
@@ -64,7 +65,8 @@
         </div>
 
         <!-- Блок с итогом -->
-        <div class="glass-card" style="padding:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+        <div class="glass-card"
+             style="padding:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
 
             <div>
                 <p style="color:var(--muted); margin:0; font-size:14px;">Итого к оплате:</p>

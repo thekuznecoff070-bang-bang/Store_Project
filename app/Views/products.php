@@ -25,10 +25,16 @@
                 <label class="field field--compact" for="sort">
                     <span class="field__label">Сортировка</span>
                     <select id="sort" class="select" name="sort" onchange="this.form.submit()">
-                        <option value="default"    <?= ($sort ?? '') === 'default'    ? 'selected' : '' ?>>По умолчанию</option>
-                        <option value="price-asc"  <?= ($sort ?? '') === 'price-asc'  ? 'selected' : '' ?>>Цена: по возрастанию</option>
-                        <option value="price-desc" <?= ($sort ?? '') === 'price-desc' ? 'selected' : '' ?>>Цена: по убыванию</option>
-                        <option value="name-asc"   <?= ($sort ?? '') === 'name-asc'   ? 'selected' : '' ?>>Название: А → Я</option>
+                        <option value="default" <?= ($sort ?? '') === 'default' ? 'selected' : '' ?>>По умолчанию
+                        </option>
+                        <option value="price-asc" <?= ($sort ?? '') === 'price-asc' ? 'selected' : '' ?>>Цена: по
+                            возрастанию
+                        </option>
+                        <option value="price-desc" <?= ($sort ?? '') === 'price-desc' ? 'selected' : '' ?>>Цена: по
+                            убыванию
+                        </option>
+                        <option value="name-asc" <?= ($sort ?? '') === 'name-asc' ? 'selected' : '' ?>>Название: А → Я
+                        </option>
                     </select>
                 </label>
 
